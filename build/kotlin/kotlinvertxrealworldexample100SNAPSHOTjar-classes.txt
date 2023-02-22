@@ -1,1 +1,0 @@
-/home/yazi/Templates/kotlin-vertx-realworld-example/build/classes/kotlin/main/io/realworld/MainVerticle$start$1.class:/home/yazi/Templates/kotlin-vertx-realworld-example/build/classes/kotlin/main/io/realworld/MainVerticle.class
