@@ -3,7 +3,9 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin ("jvm") version "1.8.10"
+  kotlin("jvm") version "1.8.10"
+  kotlin("kapt") version "1.8.10"
+  id("org.openapi.generator") version "6.4.0"
   application
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -29,6 +31,10 @@ application {
 }
 
 dependencies {
+  kapt("io.vertx:vertx-codegen:$vertxVersion:processor")
+  compileOnly("io.vertx:vertx-codegen:$vertxVersion")
+
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
   implementation("io.vertx:vertx-web-validation")
   implementation("io.vertx:vertx-auth-jwt")
@@ -46,6 +52,9 @@ dependencies {
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = "17"
@@ -66,5 +75,24 @@ tasks.withType<Test> {
 }
 
 tasks.withType<JavaExec> {
-  args = listOf("run", mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$launcherClassName", "--on-redeploy=$doOnChange")
+  args = listOf(
+    "run",
+    mainVerticleName,
+    "--redeploy=$watchForChange",
+    "--launcher-class=$launcherClassName",
+    "--on-redeploy=$doOnChange"
+  )
+}
+
+openApiGenerate {
+  generatorName.set("kotlin-vertx")
+  inputSpec.set("$rootDir/openapi.yml")
+  outputDir.set("$rootDir/src/main/kotlin")
+  configOptions.set(
+    mapOf(
+      "useVertx" to "true",
+      "packageName" to "io.realworld",
+      "serializationLibrary" to "jackson",
+    )
+  )
 }
