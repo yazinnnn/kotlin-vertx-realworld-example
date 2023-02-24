@@ -31,8 +31,8 @@ application {
 }
 
 dependencies {
-  kapt("io.vertx:vertx-codegen:$vertxVersion:processor")
-  compileOnly("io.vertx:vertx-codegen:$vertxVersion")
+
+  implementation("org.springframework.security:spring-security-crypto:6.0.2")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
@@ -40,15 +40,14 @@ dependencies {
   implementation("io.vertx:vertx-auth-jwt")
   implementation("io.vertx:vertx-service-proxy")
   implementation("io.vertx:vertx-web")
-  implementation("io.vertx:vertx-service-factory")
   implementation("io.vertx:vertx-web-openapi")
   implementation("io.vertx:vertx-pg-client")
-  implementation("io.vertx:vertx-service-discovery")
   implementation("io.vertx:vertx-lang-kotlin-coroutines")
   implementation("io.vertx:vertx-web-api-contract")
   implementation("io.vertx:vertx-lang-kotlin")
   implementation(kotlin("stdlib-jdk8"))
-  implementation("com.ongres.scram:client:2.1")
+  kapt("io.vertx:vertx-codegen:$vertxVersion:processor")
+  compileOnly("io.vertx:vertx-codegen:$vertxVersion")
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
 }

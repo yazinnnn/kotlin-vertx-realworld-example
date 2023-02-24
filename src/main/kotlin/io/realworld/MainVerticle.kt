@@ -1,24 +1,19 @@
 package io.realworld
 
-import com.fasterxml.jackson.annotation.JsonRootName
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import io.realworld.api.*
-import io.realworld.service.TestService
-import io.realworld.service.TestServiceImpl
-import io.realworld.service.TestServiceVertxEBProxy
-import io.realworld.service.TestServiceVertxProxyHandler
+import io.vertx.core.Future
 import io.vertx.core.Launcher
+import io.vertx.ext.auth.jwt.JWTAuth
+import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.APIKeyHandler
+import io.vertx.ext.web.handler.JWTAuthHandler
 import io.vertx.ext.web.openapi.RouterBuilder
-import io.vertx.ext.web.openapi.RouterBuilderOptions
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
-import io.vertx.serviceproxy.ServiceBinder
-import io.vertx.serviceproxy.ServiceProxyBuilder
-import org.slf4j.LoggerFactory
+import java.util.*
+import java.util.stream.Collectors
 
 class MainVerticle : CoroutineVerticle() {
   private val specFile = "src/main/resources/openapi.yml"
@@ -33,40 +28,43 @@ class MainVerticle : CoroutineVerticle() {
 
 
   override suspend fun start() {
-    val builder = RouterBuilder.create(vertx, specFile).await()
-    builder.options = RouterBuilderOptions().setRequireSecurityHandlers(false)
-//    articlesHandler.mount(builder)
-//    commentsHandler.mount(builder)
-//    favoritesHandler.mount(builder)
-//    profileHandler.mount(builder)
-    tagsHandler.mount(builder)
-    userAndAuthenticationHandler.mount(builder)
-    val router = builder.createRouter()
-    router.errorHandler(400, this::validationFailureHandler)
-    val base = Router.router(vertx)
-    base.route("/api/*").subRouter(router)
+//    val router = Router.router(vertx)
+//    val jwtAuth = JWTAuth.create(vertx, JWTAuthOptions())
+//    router.route().handler(JWTAuthHandler.create(jwtAuth, "Token"))
+
     vertx.createHttpServer()
-      .requestHandler(base)
+      .requestHandler(router())
       .listen(8888).await()
   }
 
-  private suspend fun buildRouter() {
+  private suspend fun router(): Router {
+    val router = Router.router(vertx)
+    router.route("/api/*").subRouter(openapi())
+    router.errorHandler(400, this::validationFailureHandler)
+    return router
+  }
+
+  private suspend fun openapi(): Router {
+
+    val jwt = JWTAuth.create(vertx, JWTAuthOptions())
     val builder = RouterBuilder.create(vertx, specFile).await()
-    builder.options = RouterBuilderOptions().setRequireSecurityHandlers(false)
-//    articlesHandler.mount(builder)
-//    commentsHandler.mount(builder)
-//    favoritesHandler.mount(builder)
-//    profileHandler.mount(builder)
+    val jwtAuthHandler = JWTAuthHandler.create(jwt, "Token")
+    builder.securityHandler("Token")
+      .bind { Future.succeededFuture(jwtAuthHandler) }
+    builder.options.isRequireSecurityHandlers = false
     tagsHandler.mount(builder)
     userAndAuthenticationHandler.mount(builder)
-    val router = builder.createRouter()
-    router.errorHandler(400, this::validationFailureHandler)
-    val base = Router.router(vertx)
-    base.route("/api/*").subRouter(router)
+    return builder.createRouter()
   }
 
   private fun validationFailureHandler(rc: RoutingContext) {
-    rc.response().setStatusCode(400)
+    println(rc.failure().localizedMessage)
+    println(rc.failure().javaClass)
+    println(rc.failure().cause?.localizedMessage)
+    rc.failure().printStackTrace()
+    rc.response()
+      .putHeader("content-type", "text/html")
+      .setStatusCode(422)
       .end("Bad Request : " + rc.failure().message)
   }
 }

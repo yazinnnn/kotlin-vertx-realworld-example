@@ -29,12 +29,12 @@ public class ArticlesApiHandler {
     }
 
     public void mount(RouterBuilder builder) {
-        builder.operation("createArticle").handler(this::createArticle);
-        builder.operation("deleteArticle").handler(this::deleteArticle);
-        builder.operation("getArticle").handler(this::getArticle);
-        builder.operation("getArticles").handler(this::getArticles);
-        builder.operation("getArticlesFeed").handler(this::getArticlesFeed);
-        builder.operation("updateArticle").handler(this::updateArticle);
+        builder.operation("CreateArticle").handler(this::createArticle);
+        builder.operation("DeleteArticle").handler(this::deleteArticle);
+        builder.operation("GetArticle").handler(this::getArticle);
+        builder.operation("GetArticles").handler(this::getArticles);
+        builder.operation("GetArticlesFeed").handler(this::getArticlesFeed);
+        builder.operation("UpdateArticle").handler(this::updateArticle);
     }
 
     private void createArticle(RoutingContext routingContext) {

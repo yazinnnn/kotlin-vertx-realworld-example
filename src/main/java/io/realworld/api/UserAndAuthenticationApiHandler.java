@@ -61,10 +61,11 @@ public class UserAndAuthenticationApiHandler {
 
   private void getCurrentUser(RoutingContext routingContext) {
     logger.info("getCurrentUser()");
+    System.out.println("getCurrentUser");
 
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-
+    System.out.println(requestParameters);
 
     api.getCurrentUser().onSuccess(apiResponse -> {
       routingContext.response().setStatusCode(apiResponse.getStatusCode());
