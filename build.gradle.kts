@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   kotlin("jvm") version "1.8.10"
   kotlin("kapt") version "1.8.10"
-  id("org.openapi.generator") version "6.4.0"
   application
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -31,7 +30,7 @@ application {
 }
 
 dependencies {
-
+  implementation("ch.qos.logback:logback-classic:1.4.5")
   implementation("org.springframework.security:spring-security-crypto:6.0.2")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -39,6 +38,8 @@ dependencies {
   implementation("io.vertx:vertx-web-validation")
   implementation("io.vertx:vertx-auth-jwt")
   implementation("io.vertx:vertx-service-proxy")
+  implementation("io.vertx:vertx-config-yaml")
+  implementation("io.vertx:vertx-config")
   implementation("io.vertx:vertx-web")
   implementation("io.vertx:vertx-web-openapi")
   implementation("io.vertx:vertx-pg-client")
@@ -80,18 +81,5 @@ tasks.withType<JavaExec> {
     "--redeploy=$watchForChange",
     "--launcher-class=$launcherClassName",
     "--on-redeploy=$doOnChange"
-  )
-}
-
-openApiGenerate {
-  generatorName.set("kotlin-vertx")
-  inputSpec.set("$rootDir/openapi.yml")
-  outputDir.set("$rootDir/src/main/kotlin")
-  configOptions.set(
-    mapOf(
-      "useVertx" to "true",
-      "packageName" to "io.realworld",
-      "serializationLibrary" to "jackson",
-    )
   )
 }

@@ -1,14 +1,12 @@
 package io.realworld.api;
 
-import io.realworld.model.CreateUserRequest;
-import io.realworld.model.LoginRequest;
-import io.realworld.model.UpdateCurrentUserRequest;
-
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.realworld.model.request.CreateUser;
+import io.realworld.model.request.Login;
+import io.realworld.model.request.UpdateUser;
 import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
-import io.vertx.ext.web.validation.RequestParameter;
 import io.vertx.ext.web.validation.ValidationHandler;
 import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
@@ -38,12 +36,11 @@ public class UserAndAuthenticationApiHandler {
 
   private void createUser(RoutingContext routingContext) {
     logger.info("createUser()");
-    System.out.println(123);
 
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
 
-    CreateUserRequest body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
+    CreateUser body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
     }) : null;
 
     logger.debug("Parameter body is {}", body);
@@ -61,13 +58,9 @@ public class UserAndAuthenticationApiHandler {
 
   private void getCurrentUser(RoutingContext routingContext) {
     logger.info("getCurrentUser()");
-    System.out.println("getCurrentUser");
-
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-    System.out.println(requestParameters);
-
-    api.getCurrentUser().onSuccess(apiResponse -> {
+    api.getCurrentUser(routingContext).onSuccess(apiResponse -> {
       routingContext.response().setStatusCode(apiResponse.getStatusCode());
       if (apiResponse.hasData()) {
         routingContext.json(apiResponse.getData());
@@ -83,7 +76,7 @@ public class UserAndAuthenticationApiHandler {
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
 
-    LoginRequest body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
+    Login body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
     }) : null;
 
     logger.debug("Parameter body is {}", body);
@@ -104,7 +97,7 @@ public class UserAndAuthenticationApiHandler {
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
 
-    UpdateCurrentUserRequest body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<UpdateCurrentUserRequest>() {
+    UpdateUser body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
     }) : null;
 
     logger.debug("Parameter body is {}", body);
