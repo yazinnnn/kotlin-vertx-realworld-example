@@ -1,6 +1,11 @@
 version: "3"
 services:
   postgres:
+    deploy:
+      resources:
+        limits:
+          memory: 100m
+          cpus: "0.1"
     image: postgres
     container_name: postgres
     restart: always

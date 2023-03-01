@@ -53,8 +53,7 @@ class ArticlesApiHandler(private val api: ArticlesApi) {
 
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
-    val slug =
-      if (requestParameters.pathParameter("slug") != null) requestParameters.pathParameter("slug").string else null
+    val slug = requestParameters.pathParameter("slug").string
     logger.debug("Parameter slug is {}", slug)
     api.getArticle(slug!!)
       .handleResponse(routingContext)
@@ -65,22 +64,17 @@ class ArticlesApiHandler(private val api: ArticlesApi) {
 
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
-    val tag =
-      if (requestParameters.queryParameter("tag") != null) requestParameters.queryParameter("tag").string else null
-    val author =
-      if (requestParameters.queryParameter("author") != null) requestParameters.queryParameter("author").string else null
-    val favorited =
-      if (requestParameters.queryParameter("favorited") != null) requestParameters.queryParameter("favorited").string else null
-    val offset =
-      if (requestParameters.queryParameter("offset") != null) requestParameters.queryParameter("offset").integer else null
-    val limit =
-      if (requestParameters.queryParameter("limit") != null) requestParameters.queryParameter("limit").integer else 20
+    val tag = requestParameters.queryParameter("tag")?.string
+    val author = requestParameters.queryParameter("author")?.string
+    val favorited = requestParameters.queryParameter("favorited")?.string
+    val offset = requestParameters.queryParameter("offset")?.integer ?: 0
+    val limit = requestParameters.queryParameter("limit")?.integer ?: 20
     logger.debug("Parameter tag is {}", tag)
     logger.debug("Parameter author is {}", author)
     logger.debug("Parameter favorited is {}", favorited)
     logger.debug("Parameter offset is {}", offset)
     logger.debug("Parameter limit is {}", limit)
-    api.getArticles(tag, author, favorited, offset!!, limit)
+    api.getArticles(tag, author, favorited, offset, limit)
       .handleResponse(routingContext)
   }
 
@@ -89,13 +83,11 @@ class ArticlesApiHandler(private val api: ArticlesApi) {
 
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
-    val offset =
-      if (requestParameters.queryParameter("offset") != null) requestParameters.queryParameter("offset").integer else null
-    val limit =
-      if (requestParameters.queryParameter("limit") != null) requestParameters.queryParameter("limit").integer else 20
+    val offset = requestParameters.queryParameter("offset")?.integer ?: 0
+    val limit = requestParameters.queryParameter("limit")?.integer ?: 20
     logger.debug("Parameter offset is {}", offset)
     logger.debug("Parameter limit is {}", limit)
-    api.getArticlesFeed(offset!!, limit)
+    api.getArticlesFeed(offset, limit)
       .handleResponse(routingContext)
   }
 
@@ -104,14 +96,13 @@ class ArticlesApiHandler(private val api: ArticlesApi) {
 
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
-    val slug =
-      if (requestParameters.pathParameter("slug") != null) requestParameters.pathParameter("slug").string else null
+    val slug = requestParameters.pathParameter("slug").string
     val body = requestParameters.body()
-    val article = if (body != null) DatabindCodec.mapper()
-      .convertValue(body.get(), object : TypeReference<UpdateArticleRequest?>() {}) else null
+    val article = DatabindCodec.mapper().convertValue<UpdateArticleRequest>(body.get())
+
     logger.debug("Parameter slug is {}", slug)
     logger.debug("Parameter article is {}", article)
-    api.updateArticle(slug!!, article!!)
+    api.updateArticle(slug, article)
       .handleResponse(routingContext)
   }
 

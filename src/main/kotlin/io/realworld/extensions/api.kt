@@ -9,5 +9,7 @@ inline fun <reified T> Future<ApiResponse<T>>.handleResponse(rc: RoutingContext)
     rc.response().statusCode = response.statusCode
     response.data?.let { rc.json(response.data) } ?: rc.end()
   }
-  onFailure(rc::fail)
+  onFailure{
+    rc.fail(it)
+  }
 }
