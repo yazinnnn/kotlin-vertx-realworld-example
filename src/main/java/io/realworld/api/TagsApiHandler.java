@@ -1,9 +1,9 @@
 package io.realworld.api;
 
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
-import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +17,6 @@ public class TagsApiHandler {
         this.api = api;
     }
 
-    @Deprecated
-    public TagsApiHandler() {
-        this(new TagsApiImpl());
-    }
 
     public void mount(RouterBuilder builder) {
         builder.operation("GetTags").handler(this::getTags);

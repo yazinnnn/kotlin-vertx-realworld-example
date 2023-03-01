@@ -1,18 +1,15 @@
 package io.realworld.verticle
 
 import io.realworld.api.*
+import io.realworld.handler.ArticlesApiHandler
 import io.vertx.core.Future
-import io.vertx.core.buffer.Buffer
 import io.vertx.ext.auth.PubSecKeyOptions
 import io.vertx.ext.auth.authentication.TokenCredentials
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.web.Router
-import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.APIKeyHandler
 import io.vertx.ext.web.openapi.RouterBuilder
-import io.vertx.kotlin.core.http.httpServerOptionsOf
-import io.vertx.kotlin.core.net.pemKeyCertOptionsOf
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 
@@ -20,12 +17,12 @@ class HttpVerticle : CoroutineVerticle() {
   private val specFile = "openapi.yml"
 
 
-  private val articlesHandler = ArticlesApiHandler(ArticlesApiImpl())
-  private val commentsHandler = CommentsApiHandler(CommentsApiImpl())
-  private val favoritesHandler = FavoritesApiHandler(FavoritesApiImpl())
-  private val profileHandler = ProfileApiHandler(ProfileApiImpl())
-  private val tagsHandler = TagsApiHandler(TagsApiImpl())
-  private val userAndAuthenticationHandler = UserAndAuthenticationApiHandler(UserAndAuthenticationApiImpl())
+  private val articlesHandler = ArticlesApiHandler(TODO())
+  private val commentsHandler = CommentsApiHandler(TODO())
+  private val favoritesHandler = FavoritesApiHandler(TODO())
+  private val profileHandler = ProfileApiHandler(TODO())
+  private val tagsHandler = TagsApiHandler(TODO())
+  private val userAndAuthenticationHandler = UserAndAuthenticationApiHandler(TODO())
 
   override suspend fun start() {
     vertx.createHttpServer()

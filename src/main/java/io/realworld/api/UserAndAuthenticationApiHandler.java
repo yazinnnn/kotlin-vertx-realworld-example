@@ -1,14 +1,14 @@
 package io.realworld.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.realworld.model.request.CreateUser;
-import io.realworld.model.request.Login;
-import io.realworld.model.request.UpdateUser;
+import io.realworld.model.request.CreateUserRequest;
+import io.realworld.model.request.LoginRequest;
+import io.realworld.model.request.UpdateCurrentUserRequest;
 import io.vertx.core.json.jackson.DatabindCodec;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
-import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +22,6 @@ public class UserAndAuthenticationApiHandler {
     this.api = api;
   }
 
-  @Deprecated
-  public UserAndAuthenticationApiHandler() {
-    this(new UserAndAuthenticationApiImpl());
-  }
 
   public void mount(RouterBuilder builder) {
     builder.operation("CreateUser").handler(this::createUser);
@@ -40,7 +36,7 @@ public class UserAndAuthenticationApiHandler {
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
 
-    CreateUser body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
+    CreateUserRequest body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
     }) : null;
 
     logger.debug("Parameter body is {}", body);
@@ -76,7 +72,7 @@ public class UserAndAuthenticationApiHandler {
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
 
-    Login body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
+    LoginRequest body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
     }) : null;
 
     logger.debug("Parameter body is {}", body);
@@ -97,7 +93,7 @@ public class UserAndAuthenticationApiHandler {
     // Param extraction
     RequestParameters requestParameters = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
 
-    UpdateUser body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
+    UpdateCurrentUserRequest body = requestParameters.body() != null ? DatabindCodec.mapper().convertValue(requestParameters.body().get(), new TypeReference<>() {
     }) : null;
 
     logger.debug("Parameter body is {}", body);

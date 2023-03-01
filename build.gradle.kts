@@ -5,6 +5,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   kotlin("jvm") version "1.8.10"
   kotlin("kapt") version "1.8.10"
+  kotlin("plugin.allopen") version "1.8.10"
+  kotlin("plugin.jpa") version "1.8.10"
   application
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -18,6 +20,7 @@ repositories {
 
 val vertxVersion = "4.3.8"
 val junitJupiterVersion = "5.9.1"
+val mutinyVertxBindingVersion = "3.2.0"
 
 val mainVerticleName = "io.realworld.MainVerticle"
 val launcherClassName = "io.vertx.core.Launcher"
@@ -32,6 +35,10 @@ application {
 dependencies {
   implementation("ch.qos.logback:logback-classic:1.4.5")
   implementation("org.springframework.security:spring-security-crypto:6.0.2")
+//  implementation("io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:$mutinyVertxBindingVersion")
+  implementation("org.hibernate.reactive:hibernate-reactive-core:1.1.9.Final")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
@@ -47,6 +54,7 @@ dependencies {
   implementation("io.vertx:vertx-web-api-contract")
   implementation("io.vertx:vertx-lang-kotlin")
   implementation(kotlin("stdlib-jdk8"))
+  implementation("org.testcontainers:postgresql:1.17.6")
   kapt("io.vertx:vertx-codegen:$vertxVersion:processor")
   compileOnly("io.vertx:vertx-codegen:$vertxVersion")
   testImplementation("io.vertx:vertx-junit5")

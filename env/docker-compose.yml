@@ -1,0 +1,12 @@
+version: "3"
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: yazi
+      POSTGRES_DB: yazi
+      POSTGRES_PASSWORD: eboh7gaiFo
+    ports:
+      - "5432:5432"

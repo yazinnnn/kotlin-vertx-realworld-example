@@ -1,6 +1,12 @@
+#file: noinspection SpellCheckingInspection
 http:
   port: 8888
 
 data:
   postgres:
-    url: ""
+    test-container: false
+    port: 5432
+    username: yazi
+    password: eboh7gaiFo
+    db: postgres
+    jdbc-url: jdbc:postgresql://localhost/postgres
