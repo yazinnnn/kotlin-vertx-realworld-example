@@ -35,12 +35,11 @@ application {
 dependencies {
   implementation("ch.qos.logback:logback-classic:1.4.5")
   implementation("org.springframework.security:spring-security-crypto:6.0.2")
-//  implementation("io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:$mutinyVertxBindingVersion")
+  implementation("io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:$mutinyVertxBindingVersion")
   implementation("org.hibernate.reactive:hibernate-reactive-core:1.1.9.Final")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("io.smallrye.reactive:mutiny-kotlin:2.1.0")
 
-
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
   implementation("io.vertx:vertx-web-validation")
   implementation("io.vertx:vertx-auth-jwt")

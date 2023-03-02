@@ -2,6 +2,7 @@ package io.realworld
 
 import io.realworld.extensions.runVerticle
 import io.realworld.extensions.runVertx
+import io.realworld.verticle.DatabaseVerticle
 import io.realworld.verticle.HttpVerticle
 import io.realworld.verticle.InitializerVerticle
 import io.vertx.config.ConfigRetriever
@@ -22,6 +23,7 @@ class MainVerticle : CoroutineVerticle() {
   override suspend fun start() {
     initConfig()
     runVerticle<InitializerVerticle> { it.config = config }.await()
+    runVerticle<DatabaseVerticle> { it.config = config.getJsonObject("data") }.await()
     runVerticle<HttpVerticle> { it.config = config }.await()
   }
 }

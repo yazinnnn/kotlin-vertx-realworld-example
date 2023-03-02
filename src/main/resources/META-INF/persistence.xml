@@ -3,21 +3,20 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
              version="2.0">
 
-  <persistence-unit name="postgresql-example">
+  <persistence-unit name="postgresql">
     <provider>org.hibernate.reactive.provider.ReactivePersistenceProvider</provider>
     <class>io.realworld.entity.UserEntity</class>
     <properties>
       <!-- PostgreSQL -->
       <property name="javax.persistence.jdbc.url"
-                value="jdbc:postgresql://localhost:25432/my_db"/>
+                value="jdbc:postgresql://localhost/yazinnnn"/>
       <!-- Credentials -->
       <property name="javax.persistence.jdbc.user"
-                value="superdabai"/>
+                value="yazinnnn"/>
       <property name="javax.persistence.jdbc.password"
-                value="f9SoWLaP36BHdo5ABKOsLxCEnzR7rGWQqxQVt3LNfg3PeTf6zgmbrmAPHj2X872trJjWQHU1rxWb5NPAeTiQvP9teDnLfZ7k"/>
+                value="yazinnnn"/>
       <!-- The Vert.x SQL Client connection pool size -->
-      <property name="hibernate.connection.pool_size"
-                value="10"/>
+      <property name="hibernate.connection.pool_size" value="10"/>
       <!-- Automatic schema export -->
       <property name="javax.persistence.schema-generation.database.action"
                 value="drop-and-create"/>
@@ -25,6 +24,8 @@
       <property name="hibernate.show_sql" value="true"/>
       <property name="hibernate.format_sql" value="true"/>
       <property name="hibernate.highlight_sql" value="true"/>
+      <property name="hibernate.physical_naming_strategy"
+                value="org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy"/>
     </properties>
   </persistence-unit>
 </persistence>

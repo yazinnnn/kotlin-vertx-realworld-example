@@ -6,7 +6,7 @@ data:
   postgres:
     test-container: false
     port: 5432
-    username: yazi
-    password: eboh7gaiFo
-    db: postgres
-    jdbc-url: jdbc:postgresql://localhost/postgres
+    username: yazinnnn
+    password: yazinnnn
+    db: yazinnnn
+    jdbc-url: jdbc:postgresql://localhost/yazinnnn

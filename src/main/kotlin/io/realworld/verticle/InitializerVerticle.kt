@@ -14,7 +14,7 @@ class InitializerVerticle : CoroutineVerticle() {
     testContainer()
   }
 
-  private suspend fun registerCodec(){
+  private fun registerCodec(){
     vertx.eventBus().registerIdentityCodec<BaseEntity>()
   }
 

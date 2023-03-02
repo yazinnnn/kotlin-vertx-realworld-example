@@ -1,6 +1,8 @@
 package io.realworld.verticle
 
-import io.realworld.api.*
+import io.realworld.api.ArticlesApiImpl
+import io.realworld.api.CommentsApiImpl
+import io.realworld.api.UserAndAuthenticationApiImpl
 import io.realworld.handler.ArticlesApiHandler
 import io.realworld.handler.CommentsApiHandler
 import io.realworld.handler.UserAndAuthenticationApiHandler
@@ -11,12 +13,7 @@ import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.APIKeyHandler
-import io.vertx.ext.web.handler.HttpException
 import io.vertx.ext.web.openapi.RouterBuilder
-import io.vertx.ext.web.validation.RequestPredicateException
-import io.vertx.kotlin.core.json.array
-import io.vertx.kotlin.core.json.obj
-import io.vertx.kotlin.core.streams.end
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 
@@ -42,14 +39,10 @@ class HttpVerticle : CoroutineVerticle() {
     val router = Router.router(vertx)
     router.route("/api/*").subRouter(openapi())
     router.errorHandler(400) {
-      val failure = it.failure()
-      println(it.failure())
-      val payload = if (failure is HttpException) failure.payload else failure.localizedMessage
       it.response()
         .putHeader("content-type", "application/json; charset=utf8")
         .setStatusCode(422)
-        .end(false) { obj("errors" to array(payload)) }
-//        .end("Bad Request : $payload")
+        .end()
     }
     router.errorHandler(401) {
       it.response()
@@ -81,7 +74,6 @@ class HttpVerticle : CoroutineVerticle() {
     builder.securityHandler("Token")
       .bind { conf ->
         val apiKey = APIKeyHandler.create { cred, handler ->
-          println(cred)
           val credentials = TokenCredentials(cred)
           credentials.token = credentials.token.removePrefix("Token ")
           jwt.authenticate(credentials, handler)
