@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory
 class UserAndAuthenticationApiHandler(private val api: UserAndAuthenticationApi) {
   fun mount(builder: RouterBuilder) {
     builder.operation("CreateUser").handler(::createUser)
-    builder.operation("GetCurrentUser")
-    builder.operation("Login")
-    builder.operation("UpdateCurrentUser")
+    builder.operation("GetCurrentUser").handler(::getCurrentUser)
+    builder.operation("Login").handler(::login)
+    builder.operation("UpdateCurrentUser").handler(::updateCurrentUser)
   }
 
   private fun createUser(routingContext: RoutingContext) {
@@ -35,6 +35,9 @@ class UserAndAuthenticationApiHandler(private val api: UserAndAuthenticationApi)
     logger.info("getCurrentUser()")
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
+    println(routingContext.user().attributes())
+    val principal = routingContext.user().principal()
+    logger.info(principal.encodePrettily())
     api.getCurrentUser(routingContext).handleResponse(routingContext)
   }
 

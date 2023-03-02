@@ -23,10 +23,10 @@ data class User(
     @get:JsonProperty("username", required = true) val username: kotlin.String,
 
     @Schema(example = "null", required = true, description = "")
-    @get:JsonProperty("bio", required = true) val bio: kotlin.String,
+    @get:JsonProperty("bio", required = true) val bio: kotlin.String?,
 
     @Schema(example = "null", required = true, description = "")
-    @get:JsonProperty("image", required = true) val image: kotlin.String
+    @get:JsonProperty("image", required = true) val image: kotlin.String?
 ) {
 
 }

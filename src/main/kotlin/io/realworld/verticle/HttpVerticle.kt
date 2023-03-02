@@ -6,6 +6,7 @@ import io.realworld.api.UserAndAuthenticationApiImpl
 import io.realworld.handler.ArticlesApiHandler
 import io.realworld.handler.CommentsApiHandler
 import io.realworld.handler.UserAndAuthenticationApiHandler
+import io.realworld.service.UserServiceVertxEBProxy
 import io.vertx.core.Future
 import io.vertx.ext.auth.PubSecKeyOptions
 import io.vertx.ext.auth.authentication.TokenCredentials
@@ -14,10 +15,11 @@ import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.APIKeyHandler
 import io.vertx.ext.web.openapi.RouterBuilder
+import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 
-class HttpVerticle : CoroutineVerticle() {
+class HttpVerticle(private val jwt: JWTAuth) : CoroutineVerticle() {
   private val specFile = "openapi.yml"
 
 
@@ -27,7 +29,13 @@ class HttpVerticle : CoroutineVerticle() {
   //  private val favoritesHandler = FavoritesApiHandler(TODO())
 //  private val profileHandler = ProfileApiHandler(TODO())
 //  private val tagsHandler = TagsApiHandler(TODO())
-  private val userAndAuthenticationHandler = UserAndAuthenticationApiHandler(UserAndAuthenticationApiImpl())
+  private val userAndAuthenticationHandler by lazy {
+    UserAndAuthenticationApiHandler(
+      UserAndAuthenticationApiImpl(
+        UserServiceVertxEBProxy(vertx, "UserServiceImpl")
+      )
+    )
+  }
 
   override suspend fun start() {
     vertx.createHttpServer()
@@ -60,16 +68,7 @@ class HttpVerticle : CoroutineVerticle() {
 
 
   private suspend fun openapi(): Router {
-    val privateKey = vertx.fileSystem().readFile("private-key.pem").await()
-    val publicKey = vertx.fileSystem().readFile("public.pem").await()
-    val jwtAuthOptions = JWTAuthOptions()
-      .apply {
-        addPubSecKey(PubSecKeyOptions().setAlgorithm("RS256").setBuffer(privateKey))
-        addPubSecKey(PubSecKeyOptions().setAlgorithm("RS256").setBuffer(publicKey))
-        jwtOptions.algorithm = "RS256"
-      }
-
-    val jwt = JWTAuth.create(vertx, jwtAuthOptions)
+    println(jwt.generateToken(jsonObjectOf("uid" to 1, "username" to "dabai")))
     val builder = RouterBuilder.create(vertx, specFile).await()
     builder.securityHandler("Token")
       .bind { conf ->
