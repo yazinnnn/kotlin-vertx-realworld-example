@@ -16,13 +16,12 @@ abstract class BaseEntity {
   @GeneratedValue
   var id: Long? = null
 
-  //  @ColumnDefault("now()")
-  @JsonIgnore
+//  @JsonIgnore
   @Column(updatable = false)
   @CreationTimestamp
   var createAt: LocalDateTime? = null
 
-  @JsonIgnore
+//  @JsonIgnore
   @UpdateTimestamp
   var updateAt: LocalDateTime? = null
 }

@@ -15,11 +15,10 @@ import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.APIKeyHandler
 import io.vertx.ext.web.openapi.RouterBuilder
-import io.vertx.kotlin.core.json.jsonObjectOf
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 
-class HttpVerticle(private val jwt: JWTAuth) : CoroutineVerticle() {
+class HttpVerticle : CoroutineVerticle() {
   private val specFile = "openapi.yml"
 
 
@@ -63,12 +62,24 @@ class HttpVerticle(private val jwt: JWTAuth) : CoroutineVerticle() {
         .setStatusCode(501)
         .end()
     }
+    router.errorHandler(500) {
+      it.response()
+        .setStatusCode(500)
+        .end(it.failure()?.cause?.message ?: it.failure()?.message ?: "")
+    }
     return router
   }
 
 
   private suspend fun openapi(): Router {
-    println(jwt.generateToken(jsonObjectOf("uid" to 1, "username" to "dabai")))
+    val publicKey = vertx.fileSystem().readFile("public.pem").await()
+    val jwtAuthOptions = JWTAuthOptions()
+      .apply {
+        addPubSecKey(PubSecKeyOptions().setAlgorithm("RS256").setBuffer(publicKey))
+        jwtOptions.algorithm = "RS256"
+        jwtOptions.setExpiresInMinutes(60)
+      }
+    val jwt = JWTAuth.create(vertx, jwtAuthOptions)
     val builder = RouterBuilder.create(vertx, specFile).await()
     builder.securityHandler("Token")
       .bind { conf ->

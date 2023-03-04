@@ -21,11 +21,16 @@ class UserAndAuthenticationApiImpl(
   }
 
   override fun getCurrentUser(rc: RoutingContext): Future<ApiResponse<Login200Response>> {
-    return Future.failedFuture(HttpException(501, "未实现"))
+    return userService.getCurrentUser(rc.user().principal().getLong("uid"))
+      .map {
+        println(it)
+        ApiResponse(data = it?.mapTo())
+      }
   }
 
   override fun login(body: LoginRequest): Future<ApiResponse<Login200Response>> {
-    return Future.failedFuture(HttpException(501, "未实现"))
+    return userService.login(body.user.email, body.user.password)
+      .map { ApiResponse(data = it?.mapTo()) }
   }
 
   override fun updateCurrentUser(body: UpdateCurrentUserRequest): Future<ApiResponse<Login200Response>> {

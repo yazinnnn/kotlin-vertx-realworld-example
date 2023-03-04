@@ -38,6 +38,7 @@ dependencies {
   implementation("io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:$mutinyVertxBindingVersion")
   implementation("org.hibernate.reactive:hibernate-reactive-core:1.1.9.Final")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("io.smallrye.reactive:mutiny-kotlin:2.1.0")
 
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
@@ -63,8 +64,13 @@ dependencies {
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.targetCompatibility = JavaVersion.VERSION_17
 
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions.jvmTarget = "17"
+tasks.withType<KotlinCompile> {
+  kotlinOptions {
+    javaParameters = true
+    freeCompilerArgs = listOf("-Xjsr305=strict", "-Xcontext-receivers", "-Xjvm-default=all-compatibility")
+    jvmTarget = "17"
+  }
+}
 
 tasks.withType<ShadowJar> {
   archiveClassifier.set("fat")
@@ -89,4 +95,8 @@ tasks.withType<JavaExec> {
     "--launcher-class=$launcherClassName",
     "--on-redeploy=$doOnChange"
   )
+}
+
+allOpen{
+  annotation("javax.persistence.MappedSuperclass")
 }
