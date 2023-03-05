@@ -14,6 +14,7 @@ import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.APIKeyHandler
+import io.vertx.ext.web.handler.HttpException
 import io.vertx.ext.web.openapi.RouterBuilder
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
@@ -63,9 +64,16 @@ class HttpVerticle : CoroutineVerticle() {
         .end()
     }
     router.errorHandler(500) {
-      it.response()
-        .setStatusCode(500)
-        .end(it.failure()?.cause?.message ?: it.failure()?.message ?: "")
+      val cause = it.failure().cause
+      if (cause is HttpException) {
+        it.response()
+          .setStatusCode(cause.statusCode)
+          .end(cause.message)
+      } else {
+        it.response()
+          .setStatusCode(500)
+          .end(cause?.cause?.message ?: cause?.message ?: "")
+      }
     }
     return router
   }

@@ -13,4 +13,6 @@ interface UserService {
   fun getCurrentUser(uid: Long): Future<JsonObject>
 
   fun login(email:String,password:String):Future<JsonObject>
+
+  fun updateUser(uid: Long, user: JsonObject):Future<JsonObject>
 }

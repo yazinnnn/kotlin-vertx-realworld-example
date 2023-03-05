@@ -34,16 +34,13 @@ class UserServiceImpl(
 
   override fun login(email: String, password: String): Future<JsonObject> {
     return emf.withSession(coroutine { session ->
-      val user = session.createQuery<UserEntity>("from UserEntity where email=?1")
+      val userEntity = session.createQuery<UserEntity>("from UserEntity where email=?1")
         .setParameter(1, email)
         .singleResultOrNull.awaitSuspending()
         ?: throw HttpException(401, "email or password is invalid")
-      val bool = BCrypt.checkpw(password, user.password)
+      val bool = BCrypt.checkpw(password, userEntity.password)
       if (!bool) throw HttpException(401, "email or password is invalid")
-      val claim = jsonObjectOf("username" to user.username, "uid" to user.id)
-      val token = jwt.generateToken(claim)
-      val response = User(email, token, user.username.toString(), user.bio, user.image)
-      JsonObject.mapFrom(Login200Response(response))
+      genResponse(userEntity)
     }).asFuture()
   }
 
@@ -56,33 +53,36 @@ class UserServiceImpl(
       userEntity.username = newUser.username
       session.persist(userEntity).awaitSuspending()
       session.flush().awaitSuspending()
-      val claim = jsonObjectOf(
-        "username" to userEntity.username, "uid" to userEntity.id
-      )
-      val token = jwt.generateToken(claim)
-      val response = User(newUser.email, token, newUser.username, userEntity.bio, userEntity.image)
-      JsonObject.mapFrom(Login200Response(response))
+      genResponse(userEntity)
     }).asFuture()
   }
 
   override fun getCurrentUser(uid: Long): Future<JsonObject> {
-    return emf.withSession { session ->
-      session.find(UserEntity::class.java, uid).map { userEntity ->
-        val claim = jsonObjectOf(
-          "username" to userEntity.username, "uid" to userEntity.id
-        )
-        val token = jwt.generateToken(claim)
-
-        JsonObject.mapFrom(
-          Login200Response(
-            User(
-              userEntity.email!!, token, userEntity.username!!, userEntity.bio, userEntity.image
-            )
-          )
-        )
-      }
-    }.asFuture()
+    return emf.withSession(coroutine { session ->
+      val userEntity = session.find(UserEntity::class.java, uid).awaitSuspending()
+      genResponse(userEntity)
+    }).asFuture()
   }
 
+  override fun updateUser(uid: Long, user: JsonObject): Future<JsonObject> {
+    return emf.withSession(coroutine { session ->
+      val userEntity = session.find(UserEntity::class.java, uid).awaitSuspending()
+      user.getString("email")?.let { userEntity.email = it }
+      user.getString("password")?.let { userEntity.email = it }
+      user.getString("username")?.let { userEntity.email = it }
+      user.getString("bio")?.let { userEntity.email = it }
+      user.getString("image")?.let { userEntity.email = it }
+      session.refresh(userEntity).awaitSuspending()
+      session.flush().awaitSuspending()
+      genResponse(userEntity)
+    }).asFuture()
 
+  }
+
+  private fun genResponse(userEntity: UserEntity): JsonObject {
+    val claim = jsonObjectOf("username" to userEntity.username, "uid" to userEntity.id)
+    val token = jwt.generateToken(claim)
+    val user = User(userEntity.email!!, token, userEntity.username!!, userEntity.bio, userEntity.image)
+    return JsonObject.mapFrom(Login200Response(user))
+  }
 }

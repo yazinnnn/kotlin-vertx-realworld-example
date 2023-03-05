@@ -10,7 +10,7 @@ import io.vertx.ext.web.RoutingContext
 
 interface UserAndAuthenticationApi {
   fun createUser(body: CreateUserRequest): Future<ApiResponse<Login200Response>>
-  fun getCurrentUser(rc: RoutingContext): Future<ApiResponse<Login200Response>>
+  fun getCurrentUser(uid: Long): Future<ApiResponse<Login200Response>>
   fun login(body: LoginRequest): Future<ApiResponse<Login200Response>>
-  fun updateCurrentUser(body: UpdateCurrentUserRequest): Future<ApiResponse<Login200Response>>
+  fun updateCurrentUser(uid: Long, body: UpdateCurrentUserRequest): Future<ApiResponse<Login200Response>>
 }

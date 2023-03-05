@@ -23,7 +23,6 @@ class UserAndAuthenticationApiHandler(private val api: UserAndAuthenticationApi)
 
   private fun createUser(routingContext: RoutingContext) {
     logger.info("createUser()")
-
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
     val body = requestParameters.body().jsonObject.mapTo<CreateUserRequest>()
@@ -35,10 +34,7 @@ class UserAndAuthenticationApiHandler(private val api: UserAndAuthenticationApi)
     logger.info("getCurrentUser()")
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
-    println(routingContext.user().attributes())
-    val principal = routingContext.user().principal()
-    logger.info(principal.encodePrettily())
-    api.getCurrentUser(routingContext).handleResponse(routingContext)
+    api.getCurrentUser(routingContext.user().principal().getLong("uid")).handleResponse(routingContext)
   }
 
   private fun login(routingContext: RoutingContext) {
@@ -57,8 +53,9 @@ class UserAndAuthenticationApiHandler(private val api: UserAndAuthenticationApi)
     // Param extraction
     val requestParameters = routingContext.get<RequestParameters>(ValidationHandler.REQUEST_CONTEXT_KEY)
     val body = requestParameters.body().jsonObject.mapTo<UpdateCurrentUserRequest>()
+    val uid = routingContext.user().principal().getLong("uid")
     logger.debug("Parameter body is {}", body)
-    api.updateCurrentUser(body).handleResponse(routingContext)
+    api.updateCurrentUser(uid, body).handleResponse(routingContext)
   }
 
   companion object {
